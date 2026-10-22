@@ -1,0 +1,15 @@
+{
+  "name": "cyberhero",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CyberHero - Full-Stack Cybersecurity Examination Portal for Dhaanish Ahmed College of Engineering, Chennai",
+  "scripts": {
+    "dev": "node dev.js",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "test": "npm --prefix server test",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm --prefix server run build && npm --prefix client run build"
+  }
+}

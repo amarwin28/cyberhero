@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #070B19;
+    color: #F8FAFC;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Cyberpunk / Glassmorphism Styles */
+@layer components {
+  .cyber-glass {
+    background: rgba(13, 21, 47, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 210, 255, 0.15);
+  }
+
+  .cyber-glass-hover {
+    transition: all 0.25s ease-in-out;
+  }
+
+  .cyber-glass-hover:hover {
+    background: rgba(22, 35, 77, 0.85);
+    border-color: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .cyber-input {
+    background: rgba(7, 11, 25, 0.85);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    color: #FFFFFF;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .cyber-input:focus {
+    border-color: #00D2FF;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.35);
+    background: rgba(10, 17, 38, 0.95);
+  }
+
+  /* Reserved padding for inputs with leading decorative icons */
+  .cyber-input-with-icon {
+    padding-left: 2.75rem !important; /* 44px (Icon is at 14px with 16px width -> ends at 30px, leaves 14px gap) */
+  }
+
+  /* Reserved padding for inputs with trailing actions (e.g., show password toggle) */
+  .cyber-input-with-action {
+    padding-right: 2.75rem !important;
+  }
+}
+
+.cyber-btn-primary {
+  background: linear-gradient(135deg, #0070F3 0%, #0099FF 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.65rem 1.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 112, 243, 0.39);
+}
+
+.cyber-btn-primary:hover {
+  background: linear-gradient(135deg, #0060D0 0%, #0084E0 100%);
+  box-shadow: 0 6px 20px rgba(0, 112, 243, 0.6);
+  transform: translateY(-1px);
+}
+
+.cyber-btn-secondary {
+  background: rgba(17, 28, 61, 0.8);
+  color: #E2E8F0;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.65rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cyber-btn-secondary:hover {
+  background: rgba(26, 42, 90, 0.9);
+  border-color: rgba(0, 210, 255, 0.45);
+  color: #FFFFFF;
+}
+
+/* Background Cyber Grid */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 210, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070B19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #16234D;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0070F3;
+}

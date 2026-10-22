@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Faculty {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  passwordHash       String
+  name               String
+  mustChangePassword Boolean  @default(true)
+  role               String   @default("FACULTY")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Student {
+  id             String        @id @default(uuid())
+  rollNumber     String        @unique
+  fullName       String
+  schoolName     String
+  standard       String        // CLASS_10, CLASS_11, CLASS_12
+  studentAddress String?
+  schoolLocation String        @map("schoolAddress")
+  city           String
+  email          String        @unique
+  phone          String
+  altPhone       String
+  passwordHash   String
+  status         String        @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, SUBMITTED
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  attempt        ExamAttempt?
+}
+
+model OTPVerification {
+  id         String   @id @default(uuid())
+  target     String   // email or phone
+  channel    String   // EMAIL, SMS
+  otpHash    String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([target, channel])
+}
+
+model Exam {
+  id               String        @id @default(uuid())
+  title            String
+  description      String
+  durationMinutes  Int           @default(45)
+  totalQuestions   Int           @default(30)
+  passingMarks     Int           @default(15)
+  isLocked         Boolean       @default(false)
+  activeVersion    Int           @default(1)
+  allowedStandards String        @default("ALL")
+  allowUnanswered  Boolean       @default(true)
+  status           String        @default("OPEN") // DRAFT, LOCKED, OPEN, CLOSED
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  versions         ExamVersion[]
+  questions        Question[]
+  attempts         ExamAttempt[]
+}
+
+model ExamVersion {
+  id            String        @id @default(uuid())
+  examId        String
+  exam          Exam          @relation(fields: [examId], references: [id], onDelete: Cascade)
+  versionNumber Int
+  isPublished   Boolean       @default(false)
+  lockedAt      DateTime?
+  lockedBy      String?
+  createdAt     DateTime      @default(now())
+  questions     Question[]
+  attempts      ExamAttempt[]
+
+  @@unique([examId, versionNumber])
+}
+
+model Question {
+  id                  String            @id @default(uuid())
+  examId              String
+  exam                Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examVersionId       String?
+  examVersion         ExamVersion?      @relation(fields: [examVersionId], references: [id], onDelete: SetNull)
+  questionText        String
+  marks               Int               @default(1)
+  standardEligibility String            @default("ALL") // ALL, CLASS_10, CLASS_11, CLASS_12
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  options             Option[]
+  attemptQuestions    AttemptQuestion[]
+  studentAnswers      StudentAnswer[]
+
+  @@index([examId, standardEligibility])
+}
+
+model Option {
+  id            String          @id @default(uuid())
+  questionId    String
+  question      Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  optionText    String
+  isCorrect     Boolean         @default(false)
+  sortOrder     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  attemptOptions AttemptOption[]
+  studentAnswers StudentAnswer[]
+
+  @@index([questionId])
+}
+
+model ExamAttempt {
+  id                 String            @id @default(uuid())
+  studentId          String            @unique
+  student            Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  examId             String
+  exam               Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examVersionId      String?
+  examVersion        ExamVersion?      @relation(fields: [examVersionId], references: [id], onDelete: SetNull)
+  startedAt          DateTime          @default(now())
+  deadlineAt         DateTime
+  submittedAt        DateTime?
+  score              Int?
+  totalPossibleScore Int?
+  status             String            @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, EXPIRED
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  attemptQuestions   AttemptQuestion[]
+  attemptOptions     AttemptOption[]
+  studentAnswers     StudentAnswer[]
+
+  @@index([studentId, status])
+}
+
+model AttemptQuestion {
+  id           String      @id @default(uuid())
+  attemptId    String
+  attempt      ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId   String
+  question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  displayOrder Int
+  createdAt    DateTime    @default(now())
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId, displayOrder])
+}
+
+model AttemptOption {
+  id           String      @id @default(uuid())
+  attemptId    String
+  attempt      ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId   String
+  optionId     String
+  option       Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  displayOrder Int
+  createdAt    DateTime    @default(now())
+
+  @@unique([attemptId, questionId, optionId])
+  @@index([attemptId, questionId, displayOrder])
+}
+
+model StudentAnswer {
+  id               String      @id @default(uuid())
+  attemptId        String
+  attempt          ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId       String
+  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOptionId String?
+  selectedOption   Option?     @relation(fields: [selectedOptionId], references: [id], onDelete: SetNull)
+  savedAt          DateTime    @default(now())
+  isFinalized      Boolean     @default(false)
+
+  @@unique([attemptId, questionId])
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid())
+  actorType String   // FACULTY, STUDENT, SYSTEM
+  actorId   String?
+  action    String
+  details   String?  // JSON string
+  createdAt DateTime @default(now())
+
+  @@index([action, createdAt])
+}
