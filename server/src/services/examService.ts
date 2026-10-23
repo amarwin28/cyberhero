@@ -34,9 +34,9 @@ export class ExamService {
         data: {
           title: 'CyberHero Cybersecurity Awareness & Knowledge Challenge',
           description: 'Official Online Examination for Class 10, 11 & 12 Students — Dhaanish Ahmed College of Engineering, Chennai.',
-          durationMinutes: 45,
-          totalQuestions: 30,
-          passingMarks: 15,
+          durationMinutes: 60,
+          totalQuestions: 50,
+          passingMarks: 25,
           isLocked: false,
           activeVersion: 1,
           status: 'OPEN',
@@ -603,7 +603,7 @@ export class ExamService {
         standard: s.standard.replace('CLASS_', '') + 'th',
         status: s.status as any,
         score: isSub && s.attempt?.score !== null && s.attempt?.score !== undefined
-          ? `${s.attempt.score}/${s.attempt.totalPossibleScore || 30}`
+          ? `${s.attempt.score}/${s.attempt.totalPossibleScore || 50}`
           : '-',
         submissionTime: s.attempt?.submittedAt
           ? s.attempt.submittedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
@@ -675,7 +675,7 @@ export class ExamService {
       altPhone: s.altPhone,
       status: s.status as any,
       score: s.attempt?.score ?? null,
-      totalMarks: s.attempt?.totalPossibleScore ?? 30,
+      totalMarks: s.attempt?.totalPossibleScore ?? 50,
       startedAt: s.attempt?.startedAt?.toISOString() || null,
       submittedAt: s.attempt?.submittedAt?.toISOString() || null,
     }));
